@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable name="draft" type="com.huyentran.tweets.models.TweetDraft"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/tweet_draft_vertical_padding"
+        android:paddingBottom="@dimen/tweet_draft_vertical_padding"
+        android:paddingRight="@dimen/tweet_draft_horizontal_padding"
+        android:paddingLeft="@dimen/tweet_draft_horizontal_padding"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tvBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvUserName"
+            android:text="@{draft.body}"/>
+
+    </RelativeLayout>
+
+</layout>

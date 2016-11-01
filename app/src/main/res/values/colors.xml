@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimaryDark">@color/darkGray</color>
+    <color name="colorPrimaryLight">@android:color/holo_purple</color>
+    <color name="colorAccent">@color/blue</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorTextPrimary">@color/black</color>
+    <color name="colorTextSecondary">@color/lightGray</color>
+    <color name="colorIcons">@color/blue</color>
+    <color name="colorDivider">@color/black</color>
+
+    <!-- Twitter Brand Colors -->
+    <color name="blue">#1DA1F2</color>
+    <color name="curiousBlue">#3687C5</color>
+    <color name="black">#14171A</color>
+    <color name="darkGray">#657786</color>
+    <color name="lightGray">#AAB8C2</color>
+    <color name="extraLightGray">#E1E8ED</color>
+    <color name="extraExtraLightGray">#F5F8FA</color>
+    <color name="white">#FFFFFF</color>
+</resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.huyentran.tweets.models.User"/>
+        <variable name="user" type="User"/>
+        <variable name="hasDrafts" type="boolean"/>
+    </data>
+
+    <RelativeLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/headerRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnCancel"
+                android:layout_width="@dimen/icon"
+                android:layout_height="@dimen/icon"
+                app:srcCompat="@drawable/icon_cancel"
+                android:background="@color/colorTransparent"
+                android:contentDescription="@string/cancel"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btnDrafts"
+                android:layout_width="@dimen/icon"
+                android:layout_height="@dimen/icon"
+                app:srcCompat="@drawable/icon_drafts"
+                android:background="@color/colorTransparent"
+                android:layout_marginRight="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin"
+                android:contentDescription="@string/drafts_description"
+                android:visibility="@{hasDrafts ? View.VISIBLE : View.GONE}"
+                />
+
+            <ImageView
+                android:id="@+id/ivProfilePic"
+                android:layout_width="@dimen/profile_pic_size"
+                android:layout_height="@dimen/profile_pic_size"
+                android:padding="@dimen/profile_pic_padding"
+                app:imageUrl="@{user.profileImageUrl}"
+                android:contentDescription="@string/profile_pic_description"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/headerRow"
+            android:hint="@string/tweet_hint"
+            tools:text="tweet tweet tweet tweet"
+            style="@style/FullWidthEditText"/>
+
+        <LinearLayout
+            android:id="@+id/btnRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin"
+                android:textColor="@color/colorTextSecondary"
+                android:text="@string/char_max"/>
+
+            <Button
+                android:id="@+id/btnTweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tweet"
+                style="@style/AppButton"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

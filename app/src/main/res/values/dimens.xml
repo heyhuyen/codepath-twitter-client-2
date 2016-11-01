@@ -1,0 +1,33 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="icon">24dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin">5dp</dimen>
+
+    <!-- Login -->
+    <dimen name="logo_size">150dp</dimen>
+
+    <!-- Tweet -->
+    <dimen name="tweet_padding">10dp</dimen>
+    <dimen name="profile_pic_size">50dp</dimen>
+    <dimen name="profile_pic_padding">5dp</dimen>
+    <dimen name="secondary_text_size">12sp</dimen>
+    <dimen name="icon_row_margin">50dp</dimen>
+    <dimen name="media_width">300dp</dimen>
+    <dimen name="media_height">175dp</dimen>
+
+    <!-- Text Button -->
+    <dimen name="button_text_size">16sp</dimen>
+    <dimen name="button_width">60dp</dimen>
+    <dimen name="button_height">20dp</dimen>
+    <dimen name="button_padding">0dp</dimen>
+    <dimen name="button_radius">5dp</dimen>
+
+    <!-- Tweet Draft -->
+    <dimen name="tweet_draft_horizontal_padding">10dp</dimen>
+    <dimen name="tweet_draft_vertical_padding">16dp</dimen>
+</resources>
