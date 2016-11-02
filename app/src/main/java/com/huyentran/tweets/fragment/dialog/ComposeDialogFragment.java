@@ -1,4 +1,4 @@
-package com.huyentran.tweets.fragment;
+package com.huyentran.tweets.fragment.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,7 +39,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Modal overlay for composing tweets.
  */
-public class ComposeFragment extends DialogFragment
+public class ComposeDialogFragment extends DialogFragment
         implements SaveDraftDialogFragment.DraftDialogListener {
 
     private static final int MAX_CHAR_COUNT = 140;
@@ -61,12 +61,12 @@ public class ComposeFragment extends DialogFragment
         void onComposeSuccess(Tweet tweet);
     }
 
-    public ComposeFragment() {
+    public ComposeDialogFragment() {
         // empty constructor
     }
 
-    public static ComposeFragment newInstance(User user, List<TweetDraft> drafts) {
-        ComposeFragment fragment = new ComposeFragment();
+    public static ComposeDialogFragment newInstance(User user, List<TweetDraft> drafts) {
+        ComposeDialogFragment fragment = new ComposeDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable("user", Parcels.wrap(user));
         args.putParcelable("drafts", Parcels.wrap(drafts));
@@ -187,7 +187,7 @@ public class ComposeFragment extends DialogFragment
     private void showSaveDraftDialog() {
         SaveDraftDialogFragment fragment =
                 SaveDraftDialogFragment.newInstance();
-        fragment.setTargetFragment(ComposeFragment.this, 5);
+        fragment.setTargetFragment(ComposeDialogFragment.this, 5);
         fragment.show(getFragmentManager(), "saveDraftDialogFragment");
     }
 

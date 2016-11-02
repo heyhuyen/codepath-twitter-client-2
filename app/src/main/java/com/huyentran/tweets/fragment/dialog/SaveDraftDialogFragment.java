@@ -1,4 +1,4 @@
-package com.huyentran.tweets.fragment;
+package com.huyentran.tweets.fragment.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
