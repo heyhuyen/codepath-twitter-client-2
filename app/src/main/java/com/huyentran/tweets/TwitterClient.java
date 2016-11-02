@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ public class TwitterClient extends OAuthBaseClient {
     private static final String API_HOME_TIMELINE = "statuses/home_timeline.json";
     private static final int DEFAULT_COUNT = 25;
     private static final int DEFAULT_SINCE_ID = 1;
+
+    private static final String API_MENTIONS_TIMELINE = "statuses/mentions_timeline.json";
 
     private static final String API_COMPOSE = "statuses/update.json";
 
@@ -64,6 +67,21 @@ public class TwitterClient extends OAuthBaseClient {
             RequestParams params = new RequestParams();
             params.put("count", DEFAULT_COUNT);
             params.put("since_id", DEFAULT_SINCE_ID);
+            if (maxId > 0) {
+                params.put("max_id", maxId);
+            }
+            this.client.get(apiUrl, params, handler);
+        }
+    }
+
+    public void getMentionsTimeline(long maxId, AsyncHttpResponseHandler handler) {
+        if (!isOnline()) {
+            this.listener.onInternetDisconnected();
+        } else {
+            this.listener.onInternetConnected();
+            String apiUrl = getApiUrl(API_MENTIONS_TIMELINE);
+            RequestParams params = new RequestParams();
+            params.put("count", DEFAULT_COUNT);
             if (maxId > 0) {
                 params.put("max_id", maxId);
             }

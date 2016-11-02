@@ -2,6 +2,7 @@ package com.huyentran.tweets.utils;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 /**
  * Endless RecyclerView scrolling from: https://gist.github.com/rogerhu/d041b6467536842aa986
@@ -61,6 +62,11 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+            if (totalItemCount < 25) {
+                Log.d("DEBUG", String.format("Endless Scroll: totalItemCount %d, skip loading more",
+                        totalItemCount));
+                return;
+            }
             currentPage++;
             onLoadMore(currentPage, totalItemCount, view);
             loading = true;
