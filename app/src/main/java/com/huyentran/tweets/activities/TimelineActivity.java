@@ -6,6 +6,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,10 +17,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.huyentran.tweets.TwitterApplication;
 import com.huyentran.tweets.databinding.ActivityTimelineBinding;
 import com.huyentran.tweets.R;
 import com.huyentran.tweets.TwitterClient;
+import com.huyentran.tweets.fragment.HomeTimelineFragment;
+import com.huyentran.tweets.fragment.MentionsTimelineFragment;
 import com.huyentran.tweets.fragment.dialog.ComposeDialogFragment;
 import com.huyentran.tweets.fragment.TweetsListFragment;
 import com.huyentran.tweets.models.Tweet;
@@ -37,11 +44,14 @@ public class TimelineActivity extends AppCompatActivity
         implements ComposeDialogFragment.ComposeFragmentListener, TwitterClient.TwitterClientListener {
 
     private ActivityTimelineBinding binding;
-    private TweetsListFragment fragmentTweetList;
-
     private CoordinatorLayout clActivity;
     private Snackbar snackbar;
     private FloatingActionButton fabCompose;
+
+    private ViewPager viewPager;
+    private TweetsPagerAdapter vpAdapter;
+    private HomeTimelineFragment homeFragment;
+    private MentionsTimelineFragment mentionsFragment;
 
     private TwitterClient client;
     private User user;
@@ -53,19 +63,20 @@ public class TimelineActivity extends AppCompatActivity
         Toolbar toolbar = this.binding.toolbar;
         setSupportActionBar(toolbar);
 
-        if (savedInstanceState == null) {
-            this.fragmentTweetList = (TweetsListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_timeline);
-        }
-
         setupViews();
 
         this.client = TwitterApplication.getRestClient();
         this.client.registerListener(TimelineActivity.this);
         getAuthenticatedUser(); // needed for composing tweets
+
+        if (savedInstanceState == null) {
+            this.homeFragment = HomeTimelineFragment.newInstance();
+            this.mentionsFragment = MentionsTimelineFragment.newInstance();
+        }
     }
 
     private void setupViews() {
+        setupTabs();
         this.clActivity = this.binding.activityTimeline;
 
         // internet snackbar
@@ -78,6 +89,14 @@ public class TimelineActivity extends AppCompatActivity
         this.fabCompose.setOnClickListener(v -> launchCompose());
     }
 
+    private void setupTabs() {
+        this.viewPager = this.binding.viewpager;
+        this.vpAdapter = new TweetsPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(this.vpAdapter);
+        PagerSlidingTabStrip tabStrip = this.binding.tabs;
+        tabStrip.setViewPager(viewPager);
+    }
+
     private void getAuthenticatedUser() {
         this.client.getAuthenticatedUser(new JsonHttpResponseHandler() {
             @Override
@@ -85,6 +104,7 @@ public class TimelineActivity extends AppCompatActivity
                 Log.d("DEBUG",
                         String.format("getAuthenticatedUser success: %s", response.toString()));
                 user = User.fromJson(response);
+                mentionsFragment.setUser(user);
                 fabCompose.setEnabled(true);
             }
 
@@ -137,7 +157,12 @@ public class TimelineActivity extends AppCompatActivity
 
     @Override
     public void onComposeSuccess(Tweet tweet) {
-        this.fragmentTweetList.insertTopTweet(tweet);
+        HomeTimelineFragment homeFragment = (HomeTimelineFragment) this.vpAdapter.getItem(HOME);
+        homeFragment.insertTopTweet(tweet);
+
+        MentionsTimelineFragment mentionsFragment =
+                (MentionsTimelineFragment) this.vpAdapter.getItem(MENTIONS);
+        mentionsFragment.insertTopTweet(tweet);
     }
 
     @Override
@@ -160,6 +185,43 @@ public class TimelineActivity extends AppCompatActivity
     @Override
     public void onInternetDisconnected() {
         this.snackbar.show();
-        this.fragmentTweetList.stopSwipeRefreshing();
+        TweetsListFragment currentFragment =
+                (TweetsListFragment) this.vpAdapter.getItem(this.viewPager.getCurrentItem());
+        currentFragment.stopSwipeRefreshing();
+    }
+
+    private static final int HOME = 0;
+    private static final int MENTIONS = 1;
+
+    /**
+     * Returns the order of the fragments in the viewpager.
+     */
+    public class TweetsPagerAdapter extends FragmentPagerAdapter {
+        private String tabTitles[] = { "Home", "Mentions" };
+
+        public TweetsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == HOME) {
+                return homeFragment;
+            } else if (position == MENTIONS) {
+                return mentionsFragment;
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return this.tabTitles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return this.tabTitles.length;
+        }
     }
 }

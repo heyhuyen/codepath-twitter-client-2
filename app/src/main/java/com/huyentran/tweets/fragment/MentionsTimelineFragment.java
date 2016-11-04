@@ -14,6 +14,7 @@ import com.huyentran.tweets.TwitterClient;
 import com.huyentran.tweets.db.MyDatabase;
 import com.huyentran.tweets.models.Tweet;
 import com.huyentran.tweets.models.Tweet_Table;
+import com.huyentran.tweets.models.User;
 import com.huyentran.tweets.utils.EndlessRecyclerViewScrollListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
@@ -25,6 +26,8 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.huyentran.tweets.TwitterClient.API_MENTIONS_TIMELINE;
+
 /**
  * {@link TweetsListFragment} for displaying a user's timeline of mentions.
  */
@@ -32,6 +35,15 @@ public class MentionsTimelineFragment extends TweetsListFragment {
 
     private TwitterClient client;
     private long curMaxId;
+    private User user;
+
+    public static MentionsTimelineFragment newInstance() {
+        MentionsTimelineFragment fragment = new MentionsTimelineFragment();
+//        Bundle args = new Bundle();
+//        args.putParcelable("user", Parcels.wrap(user));
+//        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,20 +90,20 @@ public class MentionsTimelineFragment extends TweetsListFragment {
      */
     private void initTimeline() {
         this.curMaxId = -1;
-        // check db for saved tweets
         List<Tweet> savedTweets = SQLite.select().from(Tweet.class)
+                .where(Tweet_Table.source.is(API_MENTIONS_TIMELINE))
                 .orderBy(Tweet_Table.uid, false).queryList();
         if (savedTweets.isEmpty()) {
-            Log.d("DEBUG", "No saved tweets. Fetching fresh tweets from API");
+            Log.d("DEBUG", "No saved mention tweets. Fetching fresh tweets from API");
             populateTimeline();
         } else {
-            Log.d("DEBUG", String.format("Loading %d saved tweets", savedTweets.size()));
+            Log.d("DEBUG", String.format("Loading %d saved mention tweets", savedTweets.size()));
             this.curMaxId = appendTweets(savedTweets);
         }
     }
 
     /**
-     * Sends an async request to fetch tweets for the authenticated user's home timeline
+     * Sends an async request to fetch tweets for the authenticated user's mentions timeline
      */
     private void populateTimeline() {
         Log.d("DEBUG", String.format("populateTimeline (mentions) with maxId: %d", this.curMaxId));
@@ -100,7 +112,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", String.format("getMentionsTimeline success: %s", response.toString()));
-                List<Tweet> tweetResults = Tweet.fromJsonArray(response);
+                List<Tweet> tweetResults = Tweet.fromJsonArray(response, API_MENTIONS_TIMELINE);
                 curMaxId = appendTweets(tweetResults);
                 MyDatabase.persistTweets(tweetResults);
             }
@@ -113,4 +125,30 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         });
     }
 
+    @Override
+    public void clearTweets() {
+        Log.d("DEBUG", "Clearing mentions timeline tweets...");
+        SQLite.delete(Tweet.class)
+                .where(Tweet_Table.source.is(API_MENTIONS_TIMELINE))
+                .async()
+                .execute();
+        super.clearTweets();
+    }
+
+    @Override
+    public void insertTopTweet(Tweet tweet) {
+        // check that the tweet is a self mention before inserting
+        if (user !=null && tweet.getBody().contains(this.user.getScreenName())) {
+            super.insertTopTweet(tweet);
+            Tweet copy = Tweet.copy(tweet);
+            copy.setSource(API_MENTIONS_TIMELINE);
+            copy.save();
+            Log.d("DEBUG",String.format("Inserted new tweet to top of mentions timeline " +
+                    "and persisted to db: [%d] %s", copy.getId(), copy.getBody()));
+        }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

@@ -24,9 +24,11 @@ import com.huyentran.tweets.activities.DraftsActivity;
 import com.huyentran.tweets.databinding.FragmentComposeBinding;
 import com.huyentran.tweets.models.Tweet;
 import com.huyentran.tweets.models.TweetDraft;
+import com.huyentran.tweets.models.Tweet_Table;
 import com.huyentran.tweets.models.User;
 import com.huyentran.tweets.utils.Constants;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import org.json.JSONObject;
 import org.parceler.Parcels;
@@ -35,6 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+
+import static com.huyentran.tweets.TwitterClient.API_COMPOSE;
+import static com.huyentran.tweets.TwitterClient.API_HOME_TIMELINE;
 
 /**
  * Modal overlay for composing tweets.
@@ -164,7 +169,9 @@ public class ComposeDialogFragment extends DialogFragment
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", "postTweet succeeded");
-                listener.onComposeSuccess(Tweet.fromJson(response));
+                Tweet postedTweet = Tweet.fromJson(response, API_COMPOSE);
+                postedTweet.save();
+                listener.onComposeSuccess(postedTweet);
                 if (draft != null) {
                     Log.d("DEBUG", String.format("Deleting tweeted draft [%d]: %s",
                             draft.getId(), draft.getBody()));

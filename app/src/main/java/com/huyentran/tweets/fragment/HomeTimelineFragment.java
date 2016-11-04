@@ -25,6 +25,8 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.huyentran.tweets.TwitterClient.API_HOME_TIMELINE;
+
 /**
  * {@link TweetsListFragment} for displaying a user's home timeline of tweets.
  */
@@ -32,6 +34,14 @@ public class HomeTimelineFragment extends TweetsListFragment {
 
     private TwitterClient client;
     private long curMaxId;
+
+    public static HomeTimelineFragment newInstance() {
+        HomeTimelineFragment fragment = new HomeTimelineFragment();
+//        Bundle args = new Bundle();
+//        args.putParcelable("user", Parcels.wrap(user));
+//        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,14 +87,14 @@ public class HomeTimelineFragment extends TweetsListFragment {
      */
     private void initTimeline() {
         this.curMaxId = -1;
-        // check db for saved tweets
         List<Tweet> savedTweets = SQLite.select().from(Tweet.class)
+                .where(Tweet_Table.source.is(API_HOME_TIMELINE))
                 .orderBy(Tweet_Table.uid, false).queryList();
         if (savedTweets.isEmpty()) {
-            Log.d("DEBUG", "No saved tweets. Fetching fresh tweets from API");
+            Log.d("DEBUG", "No saved home timeline tweets. Fetching fresh tweets from API");
             populateTimeline();
         } else {
-            Log.d("DEBUG", String.format("Loading %d saved tweets", savedTweets.size()));
+            Log.d("DEBUG", String.format("Loading %d home timeline tweets", savedTweets.size()));
             this.curMaxId = appendTweets(savedTweets);
         }
     }
@@ -93,13 +103,13 @@ public class HomeTimelineFragment extends TweetsListFragment {
      * Sends an async request to fetch tweets for the authenticated user's home timeline
      */
     private void populateTimeline() {
-        Log.d("DEBUG", String.format("populateTimeline with maxId: %d", this.curMaxId));
+        Log.d("DEBUG", String.format("populateTimeline (home) with maxId: %d", this.curMaxId));
 
         this.client.getHomeTimeline(this.curMaxId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", String.format("getHomeTimeline success: %s", response.toString()));
-                List<Tweet> tweetResults = Tweet.fromJsonArray(response);
+                List<Tweet> tweetResults = Tweet.fromJsonArray(response, API_HOME_TIMELINE);
                 curMaxId = appendTweets(tweetResults);
                 MyDatabase.persistTweets(tweetResults);
             }
@@ -110,6 +120,26 @@ public class HomeTimelineFragment extends TweetsListFragment {
                 Log.d("DEBUG", errorResponse.toString());
             }
         });
+    }
+
+    @Override
+    public void clearTweets() {
+        Log.d("DEBUG", "Clearing home timeline tweets...");
+        SQLite.delete(Tweet.class)
+                .where(Tweet_Table.source.is(API_HOME_TIMELINE))
+                .async()
+                .execute();
+        super.clearTweets();
+    }
+
+    @Override
+    public void insertTopTweet(Tweet tweet) {
+        super.insertTopTweet(tweet);
+        Tweet copy = Tweet.copy(tweet);
+        copy.setSource(API_HOME_TIMELINE);
+        copy.save();
+        Log.d("DEBUG",String.format("Inserted new tweet to top of home timeline " +
+                "and persisted to db: [%d] %s", copy.getId(), copy.getBody()));
     }
 
 }

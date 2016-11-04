@@ -7,11 +7,13 @@ import android.content.Context;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import java.io.IOException;
 
+/**
+ * OAuth client for interacting with the Twitter API.
+ */
 public class TwitterClient extends OAuthBaseClient {
     public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
     public static final String REST_URL = "https://api.twitter.com/1.1";
@@ -21,13 +23,13 @@ public class TwitterClient extends OAuthBaseClient {
 
     private static final String API_VERIFY_CREDS = "account/verify_credentials.json";
 
-    private static final String API_HOME_TIMELINE = "statuses/home_timeline.json";
+    public static final String API_HOME_TIMELINE = "statuses/home_timeline.json";
     private static final int DEFAULT_COUNT = 25;
     private static final int DEFAULT_SINCE_ID = 1;
 
-    private static final String API_MENTIONS_TIMELINE = "statuses/mentions_timeline.json";
+    public static final String API_MENTIONS_TIMELINE = "statuses/mentions_timeline.json";
 
-    private static final String API_COMPOSE = "statuses/update.json";
+    public static final String API_COMPOSE = "statuses/update.json";
 
     private TwitterClientListener listener;
 
@@ -40,6 +42,11 @@ public class TwitterClient extends OAuthBaseClient {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
 
+    /**
+     * Registers listener to notifiy of internet connectivity.
+     *
+     * @param listener the listener to register
+     */
     public void registerListener(TwitterClientListener listener) {
         this.listener = listener;
     }
@@ -58,6 +65,12 @@ public class TwitterClient extends OAuthBaseClient {
         }
     }
 
+    /**
+     * Queries the Twitter API for home timeline of tweets for the authenticated user.
+     *
+     * @param maxId the max id threshold (if positive, fetch tweets whose ids do not exceed this max id)
+     * @param handler the HTTP response handler
+     */
     public void getHomeTimeline(long maxId, AsyncHttpResponseHandler handler) {
         if (!isOnline()) {
             this.listener.onInternetDisconnected();
@@ -74,6 +87,12 @@ public class TwitterClient extends OAuthBaseClient {
         }
     }
 
+    /**
+     * Queries the Twitter API for mentions timeline of tweets for the authenticated user.
+     *
+     * @param maxId the max id threshold (if positive, fetch tweets whose ids do not exceed this max id)
+     * @param handler the HTTP response handler
+     */
     public void getMentionsTimeline(long maxId, AsyncHttpResponseHandler handler) {
         if (!isOnline()) {
             this.listener.onInternetDisconnected();
@@ -89,6 +108,12 @@ public class TwitterClient extends OAuthBaseClient {
         }
     }
 
+    /**
+     * Posts a tweet to Twitter for the authenticated user.
+     *
+     * @param body the tweet body
+     * @param handler the HTTP response handler
+     */
     public void postUpdate(String body, AsyncHttpResponseHandler handler) {
         if (!isOnline()) {
             this.listener.onInternetDisconnected();
@@ -101,6 +126,11 @@ public class TwitterClient extends OAuthBaseClient {
         }
     }
 
+    /**
+     * Checks for internet connection by pinging google.
+     *
+     * @return true if successful, false otherwise
+     */
     private boolean isOnline() {
         Runtime runtime = Runtime.getRuntime();
         try {

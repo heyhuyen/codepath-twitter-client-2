@@ -19,7 +19,6 @@ import com.huyentran.tweets.databinding.FragmentTweetsListBinding;
 import com.huyentran.tweets.models.Tweet;
 import com.huyentran.tweets.utils.DividerItemDecoration;
 import com.huyentran.tweets.utils.ItemClickSupport;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 
 import org.parceler.Parcels;
 
@@ -29,11 +28,11 @@ import java.util.List;
 /**
  * {@link Fragment} for displaying a list of tweets.
  */
-public class TweetsListFragment extends Fragment {
+public class TweetsListFragment extends Fragment implements TweetTimeline {
 
     protected FragmentTweetsListBinding binding;
     protected ArrayList<Tweet> tweets;
-    private TweetsArrayAdapter tweetsAdapter;
+    protected TweetsArrayAdapter tweetsAdapter;
     protected RecyclerView rvTweets;
     protected SwipeRefreshLayout swipeContainer;
 
@@ -102,23 +101,20 @@ public class TweetsListFragment extends Fragment {
         return newMaxId;
     }
 
-    /**
-     * Clears tweets.
-     */
-    public void clearTweets() {
-        Log.d("DEBUG", "Clearing tweets...");
-        Delete.tables(Tweet.class); // save users and media
-        this.tweets.clear();
-    }
-
-    public void insertTopTweet(Tweet tweet) {
-        this.tweets.add(0, tweet);
-        this.tweetsAdapter.notifyDataSetChanged();
-    }
-
     public void stopSwipeRefreshing() {
         if (this.swipeContainer.isRefreshing()) {
             this.swipeContainer.setRefreshing(false);
         }
+    }
+
+    @Override
+    public void clearTweets() {
+        this.tweets.clear();
+    }
+
+    @Override
+    public void insertTopTweet(Tweet tweet) {
+        this.tweets.add(0, tweet);
+        this.tweetsAdapter.notifyDataSetChanged();
     }
 }

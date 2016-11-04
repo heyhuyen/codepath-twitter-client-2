@@ -22,7 +22,10 @@ import java.util.ArrayList;
 public class Tweet extends BaseModel {
 
     @Column
-    @PrimaryKey
+    @PrimaryKey(autoincrement = true)
+    long id;
+
+    @Column
     long uid;
 
     @Column
@@ -45,11 +48,14 @@ public class Tweet extends BaseModel {
     @ForeignKey
     Media media;
 
+    @Column
+    String source;
+
     public Tweet() {
         // empty constructor for Parceler
     }
 
-    public static Tweet fromJson(JSONObject jsonObject) {
+    public static Tweet fromJson(JSONObject jsonObject, String source) {
         Tweet tweet = new Tweet();
         try {
             tweet.body = jsonObject.getString("text");
@@ -58,24 +64,26 @@ public class Tweet extends BaseModel {
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
             tweet.retweetCount = jsonObject.getInt("retweet_count");
             tweet.likeCount = jsonObject.getInt("favorite_count");
+            tweet.source = source;
 
             // get first media entity if one exists
             JSONArray mediaArray = jsonObject.getJSONObject("entities").getJSONArray("media");
             if (mediaArray != null && mediaArray.length() > 0) {
                 tweet.media = Media.fromJson(mediaArray.getJSONObject(0));
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return tweet;
     }
 
-    public static ArrayList<Tweet> fromJsonArray(JSONArray jsonArray) {
+    public static ArrayList<Tweet> fromJsonArray(JSONArray jsonArray, String source) {
         ArrayList<Tweet> tweets = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject tweetJson = jsonArray.getJSONObject(i);
-                Tweet tweet = fromJson(tweetJson);
+                Tweet tweet = fromJson(tweetJson, source);
                 if (tweet != null) {
                     tweets.add(tweet);
                 }
@@ -85,6 +93,23 @@ public class Tweet extends BaseModel {
             }
         }
         return tweets;
+    }
+
+    public static Tweet copy(Tweet tweet) {
+        Tweet copy = new Tweet();
+        copy.setUid(tweet.getUid());
+        copy.setBody(tweet.getBody());
+        copy.setCreatedAt(tweet.getCreatedAt());
+        copy.setUser(tweet.getUser());
+        copy.setRetweetCount(tweet.getRetweetCount());
+        copy.setLikeCount(tweet.getLikeCount());
+        copy.setSource(tweet.getSource());
+        copy.setMedia(tweet.getMedia());
+        return copy;
+    }
+
+    public long getId() {
+        return this.id;
     }
 
     public long getUid() {
@@ -115,6 +140,14 @@ public class Tweet extends BaseModel {
         return this.media;
     }
 
+    public String getSource() {
+        return this.source;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setUid(long uid) {
         this.uid = uid;
     }
@@ -141,5 +174,9 @@ public class Tweet extends BaseModel {
 
     public void setMedia(Media media) {
         this.media = media;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }
