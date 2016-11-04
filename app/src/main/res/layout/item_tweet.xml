@@ -53,7 +53,7 @@
             android:textStyle="italic"
             android:textSize="@dimen/secondary_text_size"
             android:textColor="@color/colorTextSecondary"
-            android:text="@{user.screenName}"/>
+            android:text='@{String.format("@%s", user.screenName)}'/>
 
         <TextView
             android:id="@+id/tvTime"

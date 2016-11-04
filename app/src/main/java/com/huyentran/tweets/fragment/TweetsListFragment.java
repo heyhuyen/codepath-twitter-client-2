@@ -1,6 +1,5 @@
 package com.huyentran.tweets.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,14 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.huyentran.tweets.R;
-import com.huyentran.tweets.activities.TweetDetailActivity;
 import com.huyentran.tweets.adapters.TweetsArrayAdapter;
 import com.huyentran.tweets.databinding.FragmentTweetsListBinding;
 import com.huyentran.tweets.models.Tweet;
 import com.huyentran.tweets.utils.DividerItemDecoration;
 import com.huyentran.tweets.utils.ItemClickSupport;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +31,11 @@ public class TweetsListFragment extends Fragment implements TweetTimeline {
     protected TweetsArrayAdapter tweetsAdapter;
     protected RecyclerView rvTweets;
     protected SwipeRefreshLayout swipeContainer;
+    private TweetClickListener tweetClickListener;
+
+    public interface TweetClickListener {
+        void tweetOnClick(Tweet tweet);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class TweetsListFragment extends Fragment implements TweetTimeline {
 
         this.tweets = new ArrayList<>();
         this.tweetsAdapter = new TweetsArrayAdapter(getContext(), this.tweets);
+        this.tweetClickListener = (TweetClickListener) getActivity();
     }
 
     @Nullable
@@ -65,7 +67,7 @@ public class TweetsListFragment extends Fragment implements TweetTimeline {
                     Tweet tweet = tweets.get(position);
                     Log.d("DEBUG", String.format("Tweet selected: [%d] %s",
                             tweet.getUid(), tweet.getBody()));
-                    launchDetailActivity(tweet);
+                    tweetClickListener.tweetOnClick(tweet);
                 }
         );
         RecyclerView.ItemDecoration itemDecoration = new
@@ -78,13 +80,6 @@ public class TweetsListFragment extends Fragment implements TweetTimeline {
                 R.color.curiousBlue,
                 R.color.black,
                 R.color.darkGray);
-    }
-
-    private void launchDetailActivity(Tweet tweet) {
-        Log.d("DEBUG", "Launch TweetDetailActivity");
-        Intent intent = new Intent(getContext(), TweetDetailActivity.class);
-        intent.putExtra("tweet", Parcels.wrap(tweet));
-        startActivity(intent);
     }
 
     /**

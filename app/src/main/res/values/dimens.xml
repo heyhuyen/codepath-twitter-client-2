@@ -30,4 +30,8 @@
     <!-- Tweet Draft -->
     <dimen name="tweet_draft_horizontal_padding">10dp</dimen>
     <dimen name="tweet_draft_vertical_padding">16dp</dimen>
+
+    <!-- User Profile -->
+    <dimen name="user_profile_pic_size">75dp</dimen>
+    <dimen name="profile_header_height">150dp</dimen>
 </resources>

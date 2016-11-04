@@ -4,4 +4,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.huyentran.tweets.activities.TimelineActivity">
 
+    <item
+        android:id="@+id/miProfile"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/icon_profile"
+        android:title="@string/profile"
+        android:onClick="onProfileView"/>
 </menu>

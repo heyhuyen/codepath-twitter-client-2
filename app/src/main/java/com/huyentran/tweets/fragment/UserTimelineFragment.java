@@ -21,27 +21,28 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-import static com.huyentran.tweets.TwitterClient.API_MENTIONS_TIMELINE;
+import static com.huyentran.tweets.TwitterClient.API_USER_TIMELINE;
 
 /**
- * {@link TweetsListFragment} for displaying a user's timeline of mentions.
+ * {@link TweetsListFragment} for displaying a user's timeline of tweets.
  */
-public class MentionsTimelineFragment extends TweetsListFragment {
+public class UserTimelineFragment extends TweetsListFragment {
 
     private TwitterClient client;
     private long curMaxId;
     private User user;
 
-    public static MentionsTimelineFragment newInstance() {
-        MentionsTimelineFragment fragment = new MentionsTimelineFragment();
-//        Bundle args = new Bundle();
-//        args.putParcelable("user", Parcels.wrap(user));
-//        fragment.setArguments(args);
+    public static UserTimelineFragment newInstance(User user) {
+        UserTimelineFragment fragment = new UserTimelineFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", Parcels.wrap(user));
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -50,6 +51,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         super.onCreate(savedInstanceState);
 
         this.client = TwitterApplication.getRestClient();
+        this.user = Parcels.unwrap(getArguments().getParcelable("user"));
     }
 
     @Nullable
@@ -91,28 +93,34 @@ public class MentionsTimelineFragment extends TweetsListFragment {
     private void initTimeline() {
         this.curMaxId = -1;
         List<Tweet> savedTweets = SQLite.select().from(Tweet.class)
-                .where(Tweet_Table.source.is(API_MENTIONS_TIMELINE))
+                .where(Tweet_Table.source.is(API_USER_TIMELINE))
+                .and(Tweet_Table.user_uid.is(this.user.getUid()))
                 .orderBy(Tweet_Table.uid, false).queryList();
         if (savedTweets.isEmpty()) {
-            Log.d("DEBUG", "No saved mention tweets. Fetching fresh tweets from API");
+            Log.d("DEBUG", String.format("No saved user tweets for %s. " +
+                    "Fetching fresh tweets from API", this.user.getScreenName()));
             populateTimeline();
         } else {
-            Log.d("DEBUG", String.format("Loading %d saved mention tweets", savedTweets.size()));
+            Log.d("DEBUG", String.format("Loading %d saved user tweets for %s",
+                    savedTweets.size(), this.user.getScreenName()));
             this.curMaxId = appendTweets(savedTweets);
         }
     }
 
     /**
-     * Sends an async request to fetch tweets for the authenticated user's mentions timeline
+     * Sends an async request to fetch the user timeline tweets for the user associated with
+     * the provided screen name. If the provided screen name is null, the authenticated user's
+     * timeline is fetched.
      */
     private void populateTimeline() {
-        Log.d("DEBUG", String.format("populateTimeline (mentions) with maxId: %d", this.curMaxId));
-
-        this.client.getMentionsTimeline(this.curMaxId, new JsonHttpResponseHandler() {
+        String screen_name = this.user.getScreenName();
+        Log.d("DEBUG", String.format("populateTimeline (user: %s) with maxId: %d",
+                screen_name, this.curMaxId));
+        this.client.getUserTimeline(screen_name, this.curMaxId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.d("DEBUG", String.format("getMentionsTimeline success: %s", response.toString()));
-                List<Tweet> tweetResults = Tweet.fromJsonArray(response, API_MENTIONS_TIMELINE);
+                Log.d("DEBUG", String.format("getUserTimeline success: %s", response.toString()));
+                List<Tweet> tweetResults = Tweet.fromJsonArray(response, API_USER_TIMELINE);
                 curMaxId = appendTweets(tweetResults);
                 MyDatabase.persistTweets(tweetResults);
             }
@@ -127,29 +135,13 @@ public class MentionsTimelineFragment extends TweetsListFragment {
 
     @Override
     public void clearTweets() {
-        Log.d("DEBUG", "Clearing mentions timeline tweets...");
+        Log.d("DEBUG", String.format("Clearing user timeline tweets for %s",
+                this.user.getScreenName()));
         SQLite.delete(Tweet.class)
-                .where(Tweet_Table.source.is(API_MENTIONS_TIMELINE))
+                .where(Tweet_Table.source.is(API_USER_TIMELINE))
+                .and(Tweet_Table.user_uid.is(this.user.getUid()))
                 .async()
                 .execute();
         super.clearTweets();
-    }
-
-    @Override
-    public void insertTopTweet(Tweet tweet) {
-        // check that the tweet is a self mention before inserting
-        if (user !=null
-                && tweet.getBody().contains(String.format("@%s", this.user.getScreenName()))) {
-            super.insertTopTweet(tweet);
-            Tweet copy = Tweet.copy(tweet);
-            copy.setSource(API_MENTIONS_TIMELINE);
-            copy.save();
-            Log.d("DEBUG",String.format("Inserted new tweet to top of mentions timeline " +
-                    "and persisted to db: [%d] %s", copy.getId(), copy.getBody()));
-        }
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

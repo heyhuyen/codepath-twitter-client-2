@@ -19,6 +19,7 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.huyentran.tweets.TwitterApplication;
+import com.huyentran.tweets.adapters.TweetsArrayAdapter;
 import com.huyentran.tweets.databinding.ActivityTimelineBinding;
 import com.huyentran.tweets.R;
 import com.huyentran.tweets.TwitterClient;
@@ -40,8 +41,13 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Main activity for displaying a user's twitter timelines.
+ */
 public class TimelineActivity extends AppCompatActivity
-        implements ComposeDialogFragment.ComposeFragmentListener, TwitterClient.TwitterClientListener {
+        implements ComposeDialogFragment.ComposeFragmentListener,
+        TwitterClient.TwitterClientListener, TweetsListFragment.TweetClickListener,
+        TweetsArrayAdapter.ProfileClickListener {
 
     private ActivityTimelineBinding binding;
     private CoordinatorLayout clActivity;
@@ -139,6 +145,37 @@ public class TimelineActivity extends AppCompatActivity
 //        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Launches the {@link ProfileActivity} for the authenticated user.
+     */
+    public void onProfileView(MenuItem menuItem) {
+        Log.d("DEBUG", "Launching Profile Activity");
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Launches {@link TweetDetailActivity} for the given tweet.
+     */
+    @Override
+    public void tweetOnClick(Tweet tweet) {
+        Log.d("DEBUG", "Launch TweetDetailActivity");
+        Intent intent = new Intent(this, TweetDetailActivity.class);
+        intent.putExtra("tweet", Parcels.wrap(tweet));
+        startActivity(intent);
+    }
+
+    /**
+     * Launches {@link ProfileActivity} for the user with the given screen name.
+     */
+    @Override
+    public void profileOnClick(String screenName) {
+        Log.d("DEBUG", String.format("Launching Profile Activity for user: @%s", screenName));
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("screen_name", screenName);
+        startActivity(intent);
     }
 
     /**

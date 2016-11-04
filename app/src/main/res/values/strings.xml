@@ -29,4 +29,8 @@
     <!-- Tweet Detail -->
     <string name="title_activity_tweet_detail">Tweet</string>
 
+    <!-- Profile -->
+    <string name="title_activity_profile">@string/profile</string>
+    <string name="profile">Profile</string>
+
 </resources>

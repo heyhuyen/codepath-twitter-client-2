@@ -44,8 +44,8 @@
         <activity
             android:name=".activities.TimelineActivity"
             android:label="@string/title_activity_timeline"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme">
         </activity>
         <activity
             android:name=".activities.DraftsActivity"
@@ -53,15 +53,20 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.huyentran.tweets.activities.TimelineActivity" />
+                android:value="com.huyentran.tweets.activities.TimelineActivity"/>
         </activity>
         <activity
             android:name=".activities.TweetDetailActivity"
             android:label="@string/title_activity_tweet_detail"
             android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:launchMode="singleTop">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.huyentran.tweets.activities.TimelineActivity" />
+                android:value="com.huyentran.tweets.activities.TimelineActivity"/>
         </activity>
     </application>
 

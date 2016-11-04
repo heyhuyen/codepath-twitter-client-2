@@ -4,14 +4,11 @@ import com.huyentran.tweets.db.MyDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
-
-import static android.R.attr.id;
 
 /**
  * User model.
@@ -33,6 +30,15 @@ public class User extends BaseModel {
     @Column
     String profileImageUrl;
 
+    @Column
+    String tagline;
+
+    @Column
+    int followersCount;
+
+    @Column
+    int friendsCount;
+
     public User() {
         // empty constructor for Parceler
     }
@@ -42,8 +48,12 @@ public class User extends BaseModel {
         try {
             user.uid = json.getLong("id");
             user.name = json.getString("name");
-            user.screenName = String.format("@%s", json.getString("screen_name"));
+//            String.format("@%s", json.getString("screen_name"));
+            user.screenName = json.getString("screen_name");
             user.profileImageUrl = json.getString("profile_image_url");
+            user.tagline = json.getString("description");
+            user.followersCount = json.getInt("followers_count");
+            user.friendsCount = json.getInt("friends_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -66,6 +76,18 @@ public class User extends BaseModel {
         return this.profileImageUrl;
     }
 
+    public String getTagline() {
+        return this.tagline;
+    }
+
+    public int getFollowersCount() {
+        return this.followersCount;
+    }
+
+    public int getFriendsCount() {
+        return this.friendsCount;
+    }
+
     public void setUid(long uid) {
         this.uid = uid;
     }
@@ -80,5 +102,17 @@ public class User extends BaseModel {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public void setFriendsCount(int friendsCount) {
+        this.friendsCount = friendsCount;
     }
 }

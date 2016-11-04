@@ -23,10 +23,16 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private List<Tweet> mTweets;
     private Context mContext;
+    public ProfileClickListener clickListener;
+
+    public interface ProfileClickListener {
+        void profileOnClick(String screenName);
+    }
 
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
         this.mTweets = tweets;
         this.mContext = context;
+        this.clickListener = (ProfileClickListener) getContext();
     }
 
     private Context getContext() {
@@ -80,6 +86,13 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvBody = viewHolder.getTvBody();
         String textBody = tvBody.getText().toString();
         tvBody.setText(textBody.replace(tweet.getMedia().getUrl(), ""));
+
+        viewHolder.getIvProfilePic().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.profileOnClick(viewHolder.getTvScreenName().getText().toString());
+            }
+        });
     }
 
     private void configureTextViewHolder(TweetTextViewHolder viewHolder, int position) {
@@ -90,6 +103,13 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         TextView tvTime = viewHolder.getTvTime();
         tvTime.setText(TweetDateUtils.getRelativeTimeAgo(tweet.getCreatedAt()));
+
+        viewHolder.getIvProfilePic().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.profileOnClick(viewHolder.getTvScreenName().getText().toString());
+            }
+        });
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.huyentran.tweets.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.huyentran.tweets.R;
+import com.huyentran.tweets.activities.TimelineActivity;
 import com.huyentran.tweets.databinding.ItemTweetBinding;
 
 /**
@@ -26,6 +29,8 @@ public class TweetTextViewHolder extends RecyclerView.ViewHolder {
         this.tvScreenName = this.binding.tvScreenName;
         this.tvTime = this.binding.tvTime;
         this.tvBody = this.binding.tvBody;
+
+//        this.ivProfilePic.setOnClickListener(v -> Log.d("DEBUG", "profile pic click for " + tvScreenName.getText()));
     }
 
     public ImageView getIvProfilePic() {
