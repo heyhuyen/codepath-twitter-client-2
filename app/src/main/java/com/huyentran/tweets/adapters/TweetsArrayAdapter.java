@@ -5,13 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huyentran.tweets.R;
 import com.huyentran.tweets.models.Tweet;
+import com.huyentran.tweets.utils.PatternEditableBuilder;
 import com.huyentran.tweets.utils.TweetDateUtils;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Custom adapter that takes {@link Tweet} objects and turns them into views to display in a list.
@@ -87,12 +91,9 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         String textBody = tvBody.getText().toString();
         tvBody.setText(textBody.replace(tweet.getMedia().getUrl(), ""));
 
-        viewHolder.getIvProfilePic().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.profileOnClick(viewHolder.getTvScreenName().getText().toString());
-            }
-        });
+        configureClickableText(tvBody);
+        configureProfileClick(viewHolder.getIvProfilePic(),
+                viewHolder.getTvScreenName().getText().toString());
     }
 
     private void configureTextViewHolder(TweetTextViewHolder viewHolder, int position) {
@@ -104,12 +105,25 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         TextView tvTime = viewHolder.getTvTime();
         tvTime.setText(TweetDateUtils.getRelativeTimeAgo(tweet.getCreatedAt()));
 
-        viewHolder.getIvProfilePic().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickListener.profileOnClick(viewHolder.getTvScreenName().getText().toString());
-            }
-        });
+        configureClickableText(viewHolder.getTvBody());
+        configureProfileClick(viewHolder.getIvProfilePic(),
+                viewHolder.getTvScreenName().getText().toString());
+    }
+
+    private void configureProfileClick(ImageView profileImageView, String screenName) {
+        profileImageView.setOnClickListener(v -> clickListener.profileOnClick(screenName));
+    }
+
+    private void configureClickableText(TextView bodyTextView) {
+        new PatternEditableBuilder().
+                addPattern(Pattern.compile("\\@(\\w+)"), R.color.colorAccent,
+                        text -> clickListener.profileOnClick(text.replace("@", "")))
+                .into(bodyTextView);
+
+        new PatternEditableBuilder().
+                addPattern(Pattern.compile("\\#(\\w+)"), R.color.colorAccent,
+                        text -> Toast.makeText(mContext, "hashtag" + text, Toast.LENGTH_SHORT).show())
+                .into(bodyTextView);
     }
 
     @Override

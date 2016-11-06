@@ -29,8 +29,6 @@ public class TweetTextViewHolder extends RecyclerView.ViewHolder {
         this.tvScreenName = this.binding.tvScreenName;
         this.tvTime = this.binding.tvTime;
         this.tvBody = this.binding.tvBody;
-
-//        this.ivProfilePic.setOnClickListener(v -> Log.d("DEBUG", "profile pic click for " + tvScreenName.getText()));
     }
 
     public ImageView getIvProfilePic() {
