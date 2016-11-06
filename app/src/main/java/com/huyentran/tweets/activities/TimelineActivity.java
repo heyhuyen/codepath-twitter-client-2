@@ -25,6 +25,7 @@ import com.huyentran.tweets.R;
 import com.huyentran.tweets.TwitterClient;
 import com.huyentran.tweets.fragment.HomeTimelineFragment;
 import com.huyentran.tweets.fragment.MentionsTimelineFragment;
+import com.huyentran.tweets.fragment.SearchListFragment;
 import com.huyentran.tweets.fragment.dialog.ComposeDialogFragment;
 import com.huyentran.tweets.fragment.TweetsListFragment;
 import com.huyentran.tweets.models.Tweet;
@@ -41,13 +42,15 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.huyentran.tweets.models.User_Table.screenName;
+
 /**
  * Main activity for displaying a user's twitter timelines.
  */
 public class TimelineActivity extends AppCompatActivity
         implements ComposeDialogFragment.ComposeFragmentListener,
         TwitterClient.TwitterClientListener, TweetsListFragment.TweetClickListener,
-        TweetsArrayAdapter.ProfileClickListener {
+        TweetsArrayAdapter.TweetClickListener {
 
     private ActivityTimelineBinding binding;
     private CoordinatorLayout clActivity;
@@ -157,6 +160,15 @@ public class TimelineActivity extends AppCompatActivity
     }
 
     /**
+     * Launches the {@link SearchActivity}.
+     */
+    public void onSearchView(MenuItem menuItem) {
+        Log.d("DEBUG", "Launching Search Activity");
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    /**
      * Launches {@link TweetDetailActivity} for the given tweet.
      */
     @Override
@@ -175,6 +187,17 @@ public class TimelineActivity extends AppCompatActivity
         Log.d("DEBUG", String.format("Launching Profile Activity for user: @%s", screenName));
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra("screen_name", screenName);
+        startActivity(intent);
+    }
+
+    /**
+     * Launches {@link SearchActivity} with the given hashtag query
+     */
+    @Override
+    public void hashtagOnClick(String hashtag) {
+        Log.d("DEBUG", String.format("Launching Search Activity for: %s", hashtag));
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra("query", hashtag);
         startActivity(intent);
     }
 

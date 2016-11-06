@@ -32,22 +32,14 @@ import static com.huyentran.tweets.TwitterClient.API_HOME_TIMELINE;
  */
 public class HomeTimelineFragment extends TweetsListFragment {
 
-    private TwitterClient client;
-    private long curMaxId;
-
     public static HomeTimelineFragment newInstance() {
         HomeTimelineFragment fragment = new HomeTimelineFragment();
-//        Bundle args = new Bundle();
-//        args.putParcelable("user", Parcels.wrap(user));
-//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.client = TwitterApplication.getRestClient();
     }
 
     @Nullable
@@ -86,7 +78,6 @@ public class HomeTimelineFragment extends TweetsListFragment {
      * Otherwise, fresh tweets are loaded from an API request.
      */
     private void initTimeline() {
-        this.curMaxId = -1;
         List<Tweet> savedTweets = SQLite.select().from(Tweet.class)
                 .where(Tweet_Table.source.is(API_HOME_TIMELINE))
                 .orderBy(Tweet_Table.uid, false).queryList();

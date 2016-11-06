@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.huyentran.tweets.R;
 import com.huyentran.tweets.models.Tweet;
@@ -27,16 +26,17 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private List<Tweet> mTweets;
     private Context mContext;
-    public ProfileClickListener clickListener;
+    public TweetClickListener clickListener;
 
-    public interface ProfileClickListener {
+    public interface TweetClickListener {
         void profileOnClick(String screenName);
+        void hashtagOnClick(String hashtag);
     }
 
     public TweetsArrayAdapter(Context context, List<Tweet> tweets) {
         this.mTweets = tweets;
         this.mContext = context;
-        this.clickListener = (ProfileClickListener) getContext();
+        this.clickListener = (TweetClickListener) getContext();
     }
 
     private Context getContext() {
@@ -117,12 +117,12 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void configureClickableText(TextView bodyTextView) {
         new PatternEditableBuilder().
                 addPattern(Pattern.compile("\\@(\\w+)"), R.color.colorAccent,
-                        text -> clickListener.profileOnClick(text.replace("@", "")))
+                        text -> clickListener.profileOnClick(text.substring(1)))
                 .into(bodyTextView);
 
         new PatternEditableBuilder().
                 addPattern(Pattern.compile("\\#(\\w+)"), R.color.colorAccent,
-                        text -> Toast.makeText(mContext, "hashtag" + text, Toast.LENGTH_SHORT).show())
+                        text -> clickListener.hashtagOnClick(text))
                 .into(bodyTextView);
     }
 

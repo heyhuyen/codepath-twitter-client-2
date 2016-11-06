@@ -33,9 +33,6 @@ import static com.huyentran.tweets.TwitterClient.API_USER_TIMELINE;
  * {@link TweetsListFragment} for displaying a user's timeline of tweets.
  */
 public class UserTimelineFragment extends TweetsListFragment {
-
-    private TwitterClient client;
-    private long curMaxId;
     private User user;
 
     public static UserTimelineFragment newInstance(User user) {
@@ -49,8 +46,6 @@ public class UserTimelineFragment extends TweetsListFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.client = TwitterApplication.getRestClient();
         this.user = Parcels.unwrap(getArguments().getParcelable("user"));
     }
 
@@ -59,31 +54,8 @@ public class UserTimelineFragment extends TweetsListFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup parent,
                              @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, parent, savedInstanceState);
-        setupViews();
         initTimeline();
         return view;
-    }
-
-    private void setupViews() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        this.rvTweets.setLayoutManager(layoutManager);
-        this.rvTweets.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (tweets.size() > 25 )
-                Log.d("DEBUG",
-                        String.format("Endless Scroll: onLoadMore(%d, %d)", page, totalItemsCount));
-                populateTimeline();
-            }
-        });
-
-        // pull to refresh swipe container
-        this.swipeContainer.setOnRefreshListener(() -> {
-            Log.d("DEBUG", "Swipe Refresh");
-            curMaxId = -1;
-            clearTweets();
-            populateTimeline();
-        });
     }
 
     /**
@@ -91,7 +63,6 @@ public class UserTimelineFragment extends TweetsListFragment {
      * Otherwise, fresh tweets are loaded from an API request.
      */
     private void initTimeline() {
-        this.curMaxId = -1;
         List<Tweet> savedTweets = SQLite.select().from(Tweet.class)
                 .where(Tweet_Table.source.is(API_USER_TIMELINE))
                 .and(Tweet_Table.user_uid.is(this.user.getUid()))
@@ -99,7 +70,7 @@ public class UserTimelineFragment extends TweetsListFragment {
         if (savedTweets.isEmpty()) {
             Log.d("DEBUG", String.format("No saved user tweets for %s. " +
                     "Fetching fresh tweets from API", this.user.getScreenName()));
-            populateTimeline();
+            populateTweets();
         } else {
             Log.d("DEBUG", String.format("Loading %d saved user tweets for %s",
                     savedTweets.size(), this.user.getScreenName()));
@@ -112,7 +83,8 @@ public class UserTimelineFragment extends TweetsListFragment {
      * the provided screen name. If the provided screen name is null, the authenticated user's
      * timeline is fetched.
      */
-    private void populateTimeline() {
+    @Override
+    public void populateTweets() {
         String screen_name = this.user.getScreenName();
         Log.d("DEBUG", String.format("populateTimeline (user: %s) with maxId: %d",
                 screen_name, this.curMaxId));
@@ -143,5 +115,10 @@ public class UserTimelineFragment extends TweetsListFragment {
                 .async()
                 .execute();
         super.clearTweets();
+    }
+
+    @Override
+    public void insertTopTweet(Tweet tweet) {
+        // do nothing
     }
 }

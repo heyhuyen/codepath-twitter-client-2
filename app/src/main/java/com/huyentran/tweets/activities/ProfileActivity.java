@@ -13,6 +13,7 @@ import com.huyentran.tweets.TwitterApplication;
 import com.huyentran.tweets.TwitterClient;
 import com.huyentran.tweets.adapters.TweetsArrayAdapter;
 import com.huyentran.tweets.databinding.ActivityProfileBinding;
+import com.huyentran.tweets.fragment.SearchListFragment;
 import com.huyentran.tweets.fragment.TweetsListFragment;
 import com.huyentran.tweets.fragment.UserHeaderFragment;
 import com.huyentran.tweets.fragment.UserTimelineFragment;
@@ -29,7 +30,7 @@ import cz.msebera.android.httpclient.Header;
  * Activity for displaying a user's profile and tweets.
  */
 public class ProfileActivity extends AppCompatActivity implements
-        TweetsListFragment.TweetClickListener, TweetsArrayAdapter.ProfileClickListener {
+        TweetsListFragment.TweetClickListener, TweetsArrayAdapter.TweetClickListener {
 
     private ActivityProfileBinding binding;
     private TwitterClient client;
@@ -95,5 +96,16 @@ public class ProfileActivity extends AppCompatActivity implements
     public void profileOnClick(String screenName) {
         Log.d("DEBUG", String.format("Ignoring profileOnClick for screenname: %s. " +
                 "Current profile: %s", screenName, this.user.getScreenName()));
+    }
+
+    /**
+     * Launches {@link SearchActivity} with the given hashtag query
+     */
+    @Override
+    public void hashtagOnClick(String hashtag) {
+        Log.d("DEBUG", String.format("Launching Search Activity for: %s", hashtag));
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra("query", hashtag);
+        startActivity(intent);
     }
 }

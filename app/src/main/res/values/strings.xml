@@ -33,4 +33,9 @@
     <string name="title_activity_profile">@string/profile</string>
     <string name="profile">Profile</string>
 
+    <!-- Search -->
+    <string name="title_activity_search">@string/search</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search Twitter</string>
+
 </resources>

@@ -10,4 +10,11 @@
         android:icon="@drawable/icon_profile"
         android:title="@string/profile"
         android:onClick="onProfileView"/>
+
+    <item
+        android:id="@+id/miSearch"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/icon_search"
+        android:title="@string/search"
+        android:onClick="onSearchView"/>
 </menu>

@@ -24,6 +24,7 @@ public class TwitterClient extends OAuthBaseClient {
     private static final String API_VERIFY_CREDS = "account/verify_credentials.json";
     public static final String API_USER_SHOW = "users/show.json";
 
+    public static final String API_SEARCH_TWEETS = "search/tweets.json";
     public static final String API_HOME_TIMELINE = "statuses/home_timeline.json";
     public static final String API_MENTIONS_TIMELINE = "statuses/mentions_timeline.json";
     public static final String API_USER_TIMELINE = "statuses/user_timeline.json";
@@ -58,34 +59,43 @@ public class TwitterClient extends OAuthBaseClient {
      * @param handler the HTTP response handler
      */
     public void getAuthenticatedUser(AsyncHttpResponseHandler handler) {
-        if (!isOnline()) {
-            this.listener.onInternetDisconnected();
-        } else {
-            this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_VERIFY_CREDS);
-            RequestParams params = new RequestParams();
-            params.put("include_entities", false);
-            params.put("skip_status", true);
-            params.put("include_email", false);
-            this.client.get(apiUrl, params, handler);
-        }
+        String apiUrl = getApiUrl(API_VERIFY_CREDS);
+        RequestParams params = new RequestParams();
+        params.put("include_entities", false);
+        params.put("skip_status", true);
+        params.put("include_email", false);
+        getRequest(apiUrl, params, handler);
     }
 
     /**
      * Queries the Twitter API for the user.
      *
+     * @param screenName the user screen name to search for
      * @param handler the HTTP response handler
      */
     public void getUser(String screenName, AsyncHttpResponseHandler handler) {
-        if (!isOnline()) {
-            this.listener.onInternetDisconnected();
-        } else {
-            this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_USER_SHOW);
-            RequestParams params = new RequestParams();
-            params.put("screen_name", screenName);
-            this.client.get(apiUrl, params, handler);
+        String apiUrl = getApiUrl(API_USER_SHOW);
+        RequestParams params = new RequestParams();
+        params.put("screen_name", screenName);
+        getRequest(apiUrl, params, handler);
+    }
+
+    /**
+     * Queries the Twitter API for tweets based on the given query string.
+     *
+     * @param maxId the max id threshold (if positive, fetch tweets whose ids do not exceed this max id)
+     * @param handler the HTTP response handler
+     */
+    public void getTweets(long maxId, String query, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl(API_SEARCH_TWEETS);
+        RequestParams params = new RequestParams();
+        params.put("q", query);
+        params.put("count", DEFAULT_COUNT);
+        params.put("since_id", DEFAULT_SINCE_ID);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
         }
+        getRequest(apiUrl, params, handler);
     }
 
     /**
@@ -95,19 +105,14 @@ public class TwitterClient extends OAuthBaseClient {
      * @param handler the HTTP response handler
      */
     public void getHomeTimeline(long maxId, AsyncHttpResponseHandler handler) {
-        if (!isOnline()) {
-            this.listener.onInternetDisconnected();
-        } else {
-            this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_HOME_TIMELINE);
-            RequestParams params = new RequestParams();
-            params.put("count", DEFAULT_COUNT);
-            params.put("since_id", DEFAULT_SINCE_ID);
-            if (maxId > 0) {
-                params.put("max_id", maxId);
-            }
-            this.client.get(apiUrl, params, handler);
+        String apiUrl = getApiUrl(API_HOME_TIMELINE);
+        RequestParams params = new RequestParams();
+        params.put("count", DEFAULT_COUNT);
+        params.put("since_id", DEFAULT_SINCE_ID);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
         }
+        getRequest(apiUrl, params, handler);
     }
 
     /**
@@ -117,18 +122,13 @@ public class TwitterClient extends OAuthBaseClient {
      * @param handler the HTTP response handler
      */
     public void getMentionsTimeline(long maxId, AsyncHttpResponseHandler handler) {
-        if (!isOnline()) {
-            this.listener.onInternetDisconnected();
-        } else {
-            this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_MENTIONS_TIMELINE);
-            RequestParams params = new RequestParams();
-            params.put("count", DEFAULT_COUNT);
-            if (maxId > 0) {
-                params.put("max_id", maxId);
-            }
-            this.client.get(apiUrl, params, handler);
+        String apiUrl = getApiUrl(API_MENTIONS_TIMELINE);
+        RequestParams params = new RequestParams();
+        params.put("count", DEFAULT_COUNT);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
         }
+        getRequest(apiUrl, params, handler);
     }
 
     /**
@@ -139,19 +139,14 @@ public class TwitterClient extends OAuthBaseClient {
      * @param handler the HTTP response handler
      */
     public void getUserTimeline(String screenName, long maxId, AsyncHttpResponseHandler handler) {
-        if (!isOnline()) {
-            this.listener.onInternetDisconnected();
-        } else {
-            this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_USER_TIMELINE);
-            RequestParams params = new RequestParams();
-            params.put("count", DEFAULT_COUNT);
-            params.put("screen_name", screenName);
-            if (maxId > 0) {
-                params.put("max_id", maxId);
-            }
-            this.client.get(apiUrl, params, handler);
+        String apiUrl = getApiUrl(API_USER_TIMELINE);
+        RequestParams params = new RequestParams();
+        params.put("count", DEFAULT_COUNT);
+        params.put("screen_name", screenName);
+        if (maxId > 0) {
+            params.put("max_id", maxId);
         }
+        getRequest(apiUrl, params, handler);
     }
 
     /**
@@ -161,14 +156,33 @@ public class TwitterClient extends OAuthBaseClient {
      * @param handler the HTTP response handler
      */
     public void postUpdate(String body, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl(API_COMPOSE);
+        RequestParams params = new RequestParams();
+        params.put("status", body);
+        postRequest(apiUrl, params, handler);
+    }
+
+    /**
+     * Checks for internet before dispatching API GET request.
+     */
+    private void getRequest(String url, RequestParams params, AsyncHttpResponseHandler handler) {
         if (!isOnline()) {
             this.listener.onInternetDisconnected();
         } else {
             this.listener.onInternetConnected();
-            String apiUrl = getApiUrl(API_COMPOSE);
-            RequestParams params = new RequestParams();
-            params.put("status", body);
-            this.client.post(apiUrl, params, handler);
+            this.client.get(url, params, handler);
+        }
+    }
+
+    /**
+     * Checks for internet before dispatching API POST request.
+     */
+    private void postRequest(String url, RequestParams params, AsyncHttpResponseHandler handler) {
+        if (!isOnline()) {
+            this.listener.onInternetDisconnected();
+        } else {
+            this.listener.onInternetConnected();
+            this.client.post(url, params, handler);
         }
     }
 
