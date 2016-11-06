@@ -10,6 +10,8 @@
     <color name="colorIcons">@color/blue</color>
     <color name="colorDivider">@color/black</color>
 
+    <color name="colorTransparentTextBackground">#60FFFFFF</color>
+
     <!-- Twitter Brand Colors -->
     <color name="blue">#1DA1F2</color>
     <color name="curiousBlue">#3687C5</color>

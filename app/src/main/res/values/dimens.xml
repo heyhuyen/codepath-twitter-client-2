@@ -7,6 +7,7 @@
     <dimen name="icon">24dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="margin">5dp</dimen>
+    <dimen name="tab_height">48dp</dimen>
 
     <!-- Login -->
     <dimen name="logo_size">150dp</dimen>
@@ -33,5 +34,5 @@
 
     <!-- User Profile -->
     <dimen name="user_profile_pic_size">75dp</dimen>
-    <dimen name="profile_header_height">150dp</dimen>
+    <dimen name="profile_header_height">110dp</dimen>
 </resources>

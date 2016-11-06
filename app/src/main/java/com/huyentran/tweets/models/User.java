@@ -31,6 +31,9 @@ public class User extends BaseModel {
     String profileImageUrl;
 
     @Column
+    String profileBackgroundUrl;
+
+    @Column
     String tagline;
 
     @Column
@@ -48,9 +51,9 @@ public class User extends BaseModel {
         try {
             user.uid = json.getLong("id");
             user.name = json.getString("name");
-//            String.format("@%s", json.getString("screen_name"));
             user.screenName = json.getString("screen_name");
             user.profileImageUrl = json.getString("profile_image_url");
+            user.profileBackgroundUrl = json.getString("profile_banner_url");
             user.tagline = json.getString("description");
             user.followersCount = json.getInt("followers_count");
             user.friendsCount = json.getInt("friends_count");
@@ -74,6 +77,10 @@ public class User extends BaseModel {
 
     public String getProfileImageUrl() {
         return this.profileImageUrl;
+    }
+
+    public String getProfileBackgroundUrl() {
+        return this.profileBackgroundUrl;
     }
 
     public String getTagline() {
@@ -102,6 +109,10 @@ public class User extends BaseModel {
 
     public void setProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setProfileBackgroundUrl(String backgroundUrl) {
+        this.profileBackgroundUrl = backgroundUrl;
     }
 
     public void setTagline(String tagline) {

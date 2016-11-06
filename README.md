@@ -2,7 +2,7 @@
 
 Tweety Bird is an android app that allows a user to view home and mentions timelines, view user profiles with user timelines, as well as compose and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
-Time spent: 8 hours spent in total
+Time spent: 13 hours spent in total
 
 ## User Stories
 
@@ -22,7 +22,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 * [ ] User can view following / followers list through the profile
-* [ ] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
+* [x] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
 * [ ] When a network request is sent, user sees an [indeterminate progress indicator](http://guides.codepath.com/android/Handling-ProgressBars#progress-within-actionbar)
 * [ ] User can **"reply" to any tweet on their home timeline**
   * [ ] The user that wrote the original tweet is automatically "@" replied in compose
@@ -35,7 +35,7 @@ The following **optional** features are implemented:
 The following **bonus** features are implemented:
 
 * [x] Use Parcelable instead of Serializable using the popular [Parceler library](http://guides.codepath.com/android/Using-Parceler).
-* [ ] Leverages the [data binding support module](http://guides.codepath.com/android/Applying-Data-Binding-for-Views) to bind data into layout templates.
+* [x] Leverages the [data binding support module](http://guides.codepath.com/android/Applying-Data-Binding-for-Views) to bind data into layout templates.
 * [ ] On the profile screen, leverage the [CoordinatorLayout](http://guides.codepath.com/android/Handling-Scrolls-with-CoordinatorLayout#responding-to-scroll-events) to [apply scrolling behavior](https://hackmd.io/s/SJyDOCgU) as the user scrolls through the profile timeline.
 * [ ] User can view their direct messages (or send new ones)
 

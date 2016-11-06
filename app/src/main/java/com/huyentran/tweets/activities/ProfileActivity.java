@@ -94,8 +94,13 @@ public class ProfileActivity extends AppCompatActivity implements
      */
     @Override
     public void profileOnClick(String screenName) {
-        Log.d("DEBUG", String.format("Ignoring profileOnClick for screenname: %s. " +
-                "Current profile: %s", screenName, this.user.getScreenName()));
+        // check screenName
+        if (!screenName.equals(this.user.getScreenName())) {
+            Log.d("DEBUG", String.format("Launching Profile Activity for user: @%s", screenName));
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("screen_name", screenName);
+            startActivity(intent);
+        }
     }
 
     /**

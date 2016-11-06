@@ -10,7 +10,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/rlHeader"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/profile_header_height">
+        android:layout_height="@dimen/profile_header_height"
+        android:padding="@dimen/profile_pic_padding"
+        app:backgroundUrl="@{user.profileBackgroundUrl}">
 
         <ImageView
             android:id="@+id/ivProfilePic"
@@ -35,6 +37,7 @@
             android:layout_marginRight="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             android:textStyle="bold"
+            android:background="@color/colorTransparentTextBackground"
             android:text="@{user.name}"
             tools:text="Username"/>
 
@@ -47,8 +50,8 @@
             android:layout_below="@id/tvUserName"
             android:textStyle="italic"
             android:textSize="@dimen/secondary_text_size"
-            android:textColor="@color/colorTextSecondary"
             android:text="@{user.tagline}"
+            android:background="@color/colorTransparentTextBackground"
             tools:text="this is a tagline"/>
 
         <LinearLayout
@@ -58,36 +61,29 @@
             android:orientation="horizontal"
             android:layout_below="@+id/ivProfilePic"
             android:layout_marginTop="@dimen/margin"
-            android:gravity="center_vertical">
-
-            <!--<ImageView-->
-            <!--android:id="@+id/ivRetweet"-->
-            <!--android:layout_width="@dimen/icon"-->
-            <!--android:layout_height="@dimen/icon"-->
-            <!--app:srcCompat="@drawable/icon_retweet"/>-->
+            android:gravity="center_vertical"
+            android:weightSum="2">
 
             <TextView
                 android:id="@+id/tvRetweetCount"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="1,001"
-                android:textColor="@color/colorTextSecondary"
+                android:layout_marginRight="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin"
+                android:layout_weight="1"
+                tools:text="1,001 Followers"
                 android:textSize="@dimen/secondary_text_size"
+                android:background="@color/colorTransparentTextBackground"
                 android:text='@{String.format("%,d Followers", user.followersCount)}'/>
-
-            <!--<ImageView-->
-            <!--android:id="@+id/ivLike"-->
-            <!--android:layout_width="@dimen/icon"-->
-            <!--android:layout_height="@dimen/icon"-->
-            <!--app:srcCompat="@drawable/icon_like"/>-->
 
             <TextView
                 android:id="@+id/tvLikeCount"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="1,001"
-                android:textColor="@color/colorTextSecondary"
+                android:layout_weight="1"
+                tools:text="1,001 Following"
                 android:textSize="@dimen/secondary_text_size"
+                android:background="@color/colorTransparentTextBackground"
                 android:text='@{String.format("%,d Following", user.friendsCount)}'/>
 
         </LinearLayout>

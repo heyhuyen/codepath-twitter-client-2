@@ -37,14 +37,14 @@
                 app:pstsShouldExpand="true"
                 app:pstsTextAllCaps="true"
                 android:layout_width="match_parent"
-                android:background="@color/curiousBlue"
-                android:layout_height="48dp" />
+                android:layout_height="@dimen/tab_height"
+                app:pstsIndicatorColor="@color/curiousBlue"
+                app:pstsUnderlineColor="@color/darkGray"/>
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/blue"
                 android:layout_below="@id/tabs"/>
 
         </RelativeLayout>
