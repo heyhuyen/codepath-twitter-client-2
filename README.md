@@ -22,7 +22,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 * [ ] User can view following / followers list through the profile
-* [x] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
+* [ ] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
 * [ ] When a network request is sent, user sees an [indeterminate progress indicator](http://guides.codepath.com/android/Handling-ProgressBars#progress-within-actionbar)
 * [ ] User can **"reply" to any tweet on their home timeline**
   * [ ] The user that wrote the original tweet is automatically "@" replied in compose
@@ -41,13 +41,16 @@ The following **bonus** features are implemented:
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you can get done to improve the app functionality!
+* [x] Continued DB persistence from last week's assignment
+  * Save home and mention tweets for the logged in user
+  * Save user timeline tweets (logged in user and other users)
+  * Save users and media
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+[Link to video walkthrough] (http://imgur.com/ELySRCv.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 

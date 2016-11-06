@@ -1,9 +1,11 @@
 package com.huyentran.tweets.activities;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,9 +17,12 @@ import com.huyentran.tweets.R;
 import com.huyentran.tweets.databinding.ActivityTweetDetailBinding;
 import com.huyentran.tweets.models.Media;
 import com.huyentran.tweets.models.Tweet;
+import com.huyentran.tweets.utils.PatternEditableBuilder;
 import com.huyentran.tweets.utils.TweetDateUtils;
 
 import org.parceler.Parcels;
+
+import java.util.regex.Pattern;
 
 /**
  * Activity for displaying a single tweet in detail.
@@ -65,6 +70,16 @@ public class TweetDetailActivity extends AppCompatActivity {
 
         // get timestamp string; TODO: use data binding
         this.tvTimestamp.setText(TweetDateUtils.getDetailDateFormat(this.tweet.getCreatedAt()));
+
+        new PatternEditableBuilder().
+                addPattern(Pattern.compile("\\@(\\w+)"), R.color.colorAccent,
+                        text -> profileOnClick(text.substring(1)))
+                .into(this.tvBody);
+
+        new PatternEditableBuilder().
+                addPattern(Pattern.compile("\\#(\\w+)"), R.color.colorAccent,
+                        text -> hashtagOnClick(text))
+                .into(this.tvBody);
     }
 
     @Override
@@ -88,5 +103,25 @@ public class TweetDetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Launches {@link ProfileActivity} for the user with the given screen name.
+     */
+    public void profileOnClick(String screenName) {
+        Log.d("DEBUG", String.format("Launching Profile Activity for user: @%s", screenName));
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("screen_name", screenName);
+        startActivity(intent);
+    }
+
+    /**
+     * Launches {@link SearchActivity} with the given hashtag query
+     */
+    public void hashtagOnClick(String hashtag) {
+        Log.d("DEBUG", String.format("Launching Search Activity for: %s", hashtag));
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra("query", hashtag);
+        startActivity(intent);
     }
 }

@@ -96,10 +96,16 @@ public class ProfileActivity extends AppCompatActivity implements
     public void profileOnClick(String screenName) {
         // check screenName
         if (!screenName.equals(this.user.getScreenName())) {
-            Log.d("DEBUG", String.format("Launching Profile Activity for user: @%s", screenName));
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("screen_name", screenName);
-            startActivity(intent);
+            Log.d("DEBUG", String.format("Refreshing Profile Activity for user: @%s", screenName));
+            this.client.getUser(screenName, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    user = User.fromJson(response);
+                    user.save();
+                    getSupportActionBar().setTitle(String.format("@%s", user.getScreenName()));
+                    setupFragments();
+                }
+            });
         }
     }
 
